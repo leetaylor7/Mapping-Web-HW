@@ -5,6 +5,12 @@ var queryUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_we
 d3.json(queryUrl, function(data) {
   // Once we get a response, send the data.features object to the createFeatures function
   createFeatures(data.features);
+
+  for (var i = 0; i < 10; i++){
+    console.log(data.features[i].geometry);
+    // console.log(location)
+  }
+  // console.log(data.features)
 });
 
 function createFeatures(earthquakeData) {
@@ -16,9 +22,18 @@ function createFeatures(earthquakeData) {
       "</h3><hr><p>" + new Date(feature.properties.time) + "</p>");
   }
 
+
   // Create a GeoJSON layer containing the features array on the earthquakeData object
   // Run the onEachFeature function once for each piece of data in the array
   var earthquakes = L.geoJSON(earthquakeData, {
+    "pointToLayer": function (feature, latlng) {
+      var geojsonMarkerOptions = {
+        radius: feature.properties.mag * 10,
+        fillopacity: feature.properties.mag / 10,
+        opacity: feature.properties.mag / 10
+      }
+      return L.circleMarker(latlng, geojsonMarkerOptions)
+    },
     "onEachFeature": popupBinder
   });
 
@@ -70,3 +85,4 @@ function createMap(earthquakes) {
     collapsed: false
   }).addTo(myMap);
 }
+// }
