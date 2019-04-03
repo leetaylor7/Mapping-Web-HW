@@ -5,12 +5,6 @@ var queryUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_we
 d3.json(queryUrl, function(data) {
   // Once we get a response, send the data.features object to the createFeatures function
   createFeatures(data.features);
-
-  for (var i = 0; i < 10; i++){
-    console.log(data.features[i].geometry);
-    // console.log(location)
-  }
-  // console.log(data.features)
 });
 
 function createFeatures(earthquakeData) {
@@ -22,15 +16,31 @@ function createFeatures(earthquakeData) {
       "</h3><hr><p>" + new Date(feature.properties.time) + "</p>");
   }
 
+  console.log(earthquakeData);
 
+  //run an if statment to determine color
+  function colorcolor(feature){
+    var magnitude = feature.properties.mag; 
+    if (magnitude >= 4) {
+      color = "#DC143C";
+    }
+    else if (magnitude >= 2.5) {
+      color = "#FFD700";
+    }
+    else {
+      color = "#3388ff"
+    }
+    return color
+  }
   // Create a GeoJSON layer containing the features array on the earthquakeData object
   // Run the onEachFeature function once for each piece of data in the array
   var earthquakes = L.geoJSON(earthquakeData, {
     "pointToLayer": function (feature, latlng) {
       var geojsonMarkerOptions = {
         radius: feature.properties.mag * 10,
-        fillopacity: feature.properties.mag / 10,
-        opacity: feature.properties.mag / 10
+        fillopacity: feature.properties.mag,
+        opacity: feature.properties.mag / 10,
+        color: colorcolor(feature)
       }
       return L.circleMarker(latlng, geojsonMarkerOptions)
     },
